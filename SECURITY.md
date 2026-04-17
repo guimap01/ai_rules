@@ -22,6 +22,22 @@ If the MCP tool is unavailable, run `pnpm audit --audit-level=high` after instal
 
 ---
 
+## pnpm Overrides — Check Before Adding Direct Deps
+
+The root `package.json` has a `pnpm.overrides` section that pins versions for certain packages across the entire monorepo (e.g. `multer: ">=2.1.1"`, `axios: ">=1.15.0"`). When adding a package as a **direct dependency** of any app, its version specifier must match the override specifier exactly — otherwise CI fails with:
+
+```
+ERR_PNPM_OUTDATED_LOCKFILE  specifiers in the lockfile don't match specifiers in package.json
+```
+
+**Steps when adding a new dep:**
+
+1. Check root `package.json` → `pnpm.overrides` for the package name.
+2. If an override exists, use that exact specifier (e.g. `>=2.1.1`) in the app's `package.json`, not `^x.y.z`.
+3. Run `pnpm install --frozen-lockfile` locally to verify before committing.
+
+---
+
 ## Automated Safeguards Already in Place
 
 | Layer | What it does |
